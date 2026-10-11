@@ -21,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
-    private static final String APP_URL = "https://ashxfacebook.onrender.com";
+    private static final String APP_URL = "https://ashxstudio.onrender.com";
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
