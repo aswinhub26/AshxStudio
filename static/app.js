@@ -281,6 +281,18 @@ function getPlatformDetails(url) {
             platform: 'youtube',
             icon: `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8.5L15.5 12L10 15.5V8.5Z" fill="white"/></svg>`
         };
+    } else if (url.includes('tiktok.com')) {
+        return {
+            name: 'TikTok Video',
+            platform: 'tiktok',
+            icon: `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M16.6 8.2c-1.1-.7-1.8-1.9-1.9-3.2H12v11.5c0 1.5-1.2 2.7-2.7 2.7s-2.7-1.2-2.7-2.7 1.2-2.7 2.7-2.7c.3 0 .6.1.9.2v-2.8c-.3 0-.6-.1-.9-.1-3 0-5.5 2.5-5.5 5.5s2.5 5.5 5.5 5.5 5.5-2.5 5.5-5.5V9.7c1.1.8 2.5 1.3 4 1.3v-2.8h-1.8z" fill="#00F2FE"/></svg>`
+        };
+    } else if (url.includes('twitter.com') || url.includes('x.com')) {
+        return {
+            name: 'X (Twitter) Media',
+            platform: 'twitter',
+            icon: `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M14.2 10.4L19.4 4.5h-1.2l-4.5 5.1L10.1 4.5H6l5.5 7.8-5.5 6.2h1.2l4.8-5.4 3.8 5.4h4.1l-5.7-8.1zm-1.7 1.9l-.5-.8-4.3-6.1h1.9l3.4 4.8.5.8 4.5 6.4h-1.9l-3.6-5.1z" fill="#FFFFFF"/></svg>`
+        };
     } else if (url.includes('facebook.com') || url.includes('fb.watch')) {
         return {
             name: 'Facebook Video / Reel',
@@ -347,6 +359,8 @@ function detectPlatformFromUrl(url) {
     let p = 'facebook';
     if (url.includes('instagram.com')) p = 'instagram';
     else if (url.includes('youtube.com') || url.includes('youtu.be')) p = 'youtube';
+    else if (url.includes('tiktok.com')) p = 'tiktok';
+    else if (url.includes('twitter.com') || url.includes('x.com')) p = 'twitter';
     else if (url.includes('whatsapp.com') || url.includes('wa.me')) p = 'whatsapp';
     else if (url.includes('facebook.com') || url.includes('fb.watch')) p = 'facebook';
 
@@ -371,6 +385,12 @@ function updatePlatformUI() {
     } else if (currentPlatform === 'youtube') {
         placeholder = "Paste YouTube Shorts or Video link...";
         iconSvg = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#FF0000"/><path d="M10 8.5L15.5 12L10 15.5V8.5Z" fill="white"/></svg>`;
+    } else if (currentPlatform === 'tiktok') {
+        placeholder = "Paste TikTok Video link...";
+        iconSvg = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M16.6 8.2c-1.1-.7-1.8-1.9-1.9-3.2H12v11.5c0 1.5-1.2 2.7-2.7 2.7s-2.7-1.2-2.7-2.7 1.2-2.7 2.7-2.7c.3 0 .6.1.9.2v-2.8c-.3 0-.6-.1-.9-.1-3 0-5.5 2.5-5.5 5.5s2.5 5.5 5.5 5.5 5.5-2.5 5.5-5.5V9.7c1.1.8 2.5 1.3 4 1.3v-2.8h-1.8z" fill="#00F2FE"/></svg>`;
+    } else if (currentPlatform === 'twitter') {
+        placeholder = "Paste X / Twitter Video link...";
+        iconSvg = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M14.2 10.4L19.4 4.5h-1.2l-4.5 5.1L10.1 4.5H6l5.5 7.8-5.5 6.2h1.2l4.8-5.4 3.8 5.4h4.1l-5.7-8.1zm-1.7 1.9l-.5-.8-4.3-6.1h1.9l3.4 4.8.5.8 4.5 6.4h-1.9l-3.6-5.1z" fill="#FFFFFF"/></svg>`;
     } else if (currentPlatform === 'whatsapp') {
         placeholder = "Paste WhatsApp Status link / media...";
         iconSvg = `<svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="12" fill="#25D366"/><path d="M17.2 14.5C17 14.4 15.8 13.8 15.6 13.7C15.4 13.6 15.2 13.6 15.1 13.8C14.9 14.1 14.4 14.7 14.2 14.9C14.1 15.1 13.9 15.1 13.7 15C13.5 14.9 12.7 14.6 11.8 13.8C11.1 13.1 10.6 12.3 10.5 12.1C10.4 11.9 10.5 11.8 10.6 11.7C10.7 11.6 10.8 11.4 10.9 11.3C11 11.2 11.1 11.1 11.1 11C11.2 10.9 11.1 10.7 11.1 10.6C11 10.5 10.6 9.4 10.4 8.9C10.2 8.4 10 8.5 9.9 8.5H9.4C9.2 8.5 9 8.6 8.8 8.8C8.6 9 8 9.6 8 10.7C8 11.9 8.8 13 9 13.2C9.1 13.3 10.6 15.6 12.9 16.6C15.2 17.5 15.2 17.2 15.6 17.2C16 17.1 16.9 16.6 17.1 16.1C17.3 15.5 17.3 15 17.2 14.9C17.2 14.8 17.1 14.7 16.9 14.6L17.2 14.5Z" fill="white"/></svg>`;

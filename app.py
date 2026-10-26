@@ -60,7 +60,8 @@ def clean_url(raw_url: str) -> str:
     if youtu_match:
         return f"https://www.youtube.com/watch?v={youtu_match.group(1)}"
 
-    if any(k in raw_url for k in ['share/r/', 'share/v/', 'fb.watch/']):
+    # Multi-platform redirect resolvers (FB watch, TikTok shortlinks, X / Twitter)
+    if any(k in raw_url for k in ['share/r/', 'share/v/', 'fb.watch/', 'vt.tiktok.com/', 'vm.tiktok.com/', 't.co/']):
         try:
             resp = requests.head(raw_url, headers=HEADERS, allow_redirects=True, timeout=5)
             if resp.url:
@@ -180,10 +181,13 @@ def extract_media(url: str):
     direct_audio_url = chosen_audio.get('url') if chosen_audio else direct_hd_url
 
     platform = "Universal"
-    if "facebook" in url or "fb.watch" in url: platform = "Facebook"
-    elif "instagram" in url: platform = "Instagram"
-    elif "youtube" in url or "youtu.be" in url: platform = "YouTube"
-    elif "whatsapp" in url: platform = "WhatsApp"
+    lower_u = url.lower()
+    if "facebook.com" in lower_u or "fb.watch" in lower_u: platform = "Facebook"
+    elif "instagram.com" in lower_u: platform = "Instagram"
+    elif "youtube.com" in lower_u or "youtu.be" in lower_u: platform = "YouTube"
+    elif "tiktok.com" in lower_u: platform = "TikTok"
+    elif "twitter.com" in lower_u or "x.com" in lower_u: platform = "X (Twitter)"
+    elif "whatsapp.com" in lower_u or "wa.me" in lower_u: platform = "WhatsApp"
 
     hd_height = chosen_hd.get('height') if chosen_hd else None
     sd_height = chosen_sd.get('height') if chosen_sd else None
