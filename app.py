@@ -201,6 +201,16 @@ def extract_media(url: str):
 def index():
     return render_template('index.html')
 
+@app.route('/healthz')
+@app.route('/api/health')
+def health_check():
+    return jsonify({
+        "status": "healthy",
+        "service": "AshxStudio",
+        "version": "2.2.0",
+        "platforms": ["Facebook", "Instagram", "YouTube", "TikTok", "X/Twitter", "WhatsApp"]
+    }), 200
+
 @app.route('/sw.js')
 def serve_sw():
     return send_from_directory('.', 'sw.js', mimetype='application/javascript')
