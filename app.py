@@ -3,6 +3,8 @@ import re
 import json
 import logging
 import urllib.parse
+import socket
+import ipaddress
 import requests
 from flask import Flask, request, jsonify, render_template, Response, stream_with_context, send_from_directory
 try:
@@ -24,6 +26,26 @@ HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.9',
 }
+
+def is_safe_url(url: str) -> bool:
+    """Validates URL scheme and protects against SSRF / internal IP access."""
+    if not url or len(url) > 2048:
+        return False
+    try:
+        parsed = urllib.parse.urlparse(url)
+        if parsed.scheme not in ('http', 'https'):
+            return False
+        hostname = parsed.hostname
+        if not hostname or hostname.lower() in ('localhost', 'metadata.google.internal'):
+            return False
+        addr_info = socket.getaddrinfo(hostname, None)
+        for info in addr_info:
+            ip = ipaddress.ip_address(info[4][0])
+            if ip.is_private or ip.is_loopback or ip.is_link_local or ip.is_reserved:
+                return False
+        return True
+    except Exception:
+        return False
 
 def clean_url(raw_url: str) -> str:
     """Cleans social URLs and resolves redirects."""
@@ -269,10 +291,11 @@ def download():
     
     if not video_url:
         return jsonify({"error": "Missing media URL"}), 400
+
+    if not is_safe_url(video_url):
+        logger.warning(f"Rejected unsafe/SSRF download URL: {video_url[:100]}")
+        return jsonify({"error": "Invalid, malformed, or restricted media URL"}), 400
         
-    safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:40]
-    filename = f"AshxStudio_{safe_title}.{ext}"
-    
     mime_map = {
         'mp3': 'audio/mpeg',
         'm4a': 'audio/mp4',
@@ -280,6 +303,11 @@ def download():
         'mp4': 'video/mp4',
         'webm': 'video/webm'
     }
+    if ext not in mime_map:
+        ext = 'mp4'
+
+    safe_title = re.sub(r'[^a-zA-Z0-9_-]', '_', title)[:40] or "Media"
+    filename = f"AshxStudio_{safe_title}.{ext}"
     mime = mime_map.get(ext, 'application/octet-stream')
 
     try:
